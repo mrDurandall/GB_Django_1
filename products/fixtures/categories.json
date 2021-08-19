@@ -1,0 +1,26 @@
+[
+{
+  "model": "products.productcategory",
+  "pk": 1,
+  "fields": {
+    "name": "Одежда",
+    "description": "Настоящая одежда! Её Можно носить!"
+  }
+},
+{
+  "model": "products.productcategory",
+  "pk": 2,
+  "fields": {
+    "name": "Обувь",
+    "description": "Потому что асфальт слишком горячий!"
+  }
+},
+{
+  "model": "products.productcategory",
+  "pk": 3,
+  "fields": {
+    "name": "Аксесуары",
+    "description": "Рюкзаки, сумки и пр."
+  }
+}
+]
