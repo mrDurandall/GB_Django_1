@@ -33,3 +33,10 @@ class UserRegistrationForm(UserCreationForm):
         model = User
         fields = ('username', 'email', 'first_name', 'last_name', 'password1', 'password2')
 
+    def clean_first_name(self):
+        data = self.cleaned_data['first_name']
+        if len(data) < 2:
+            raise forms.ValidationError('Имя коротковато!')
+
+        return data
+
