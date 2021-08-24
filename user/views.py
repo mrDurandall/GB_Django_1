@@ -32,6 +32,8 @@ def registration(request):
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse('user:login'))
+        else:
+            print(form.errors)
     else:
         form = UserRegistrationForm()
     context = {'title': 'GeekShop - регистрация', 'form': form}

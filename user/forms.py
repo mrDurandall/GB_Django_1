@@ -1,5 +1,6 @@
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django import forms
+from django.core.exceptions import ValidationError
 
 from user.models import User
 
@@ -36,7 +37,7 @@ class UserRegistrationForm(UserCreationForm):
     def clean_first_name(self):
         data = self.cleaned_data['first_name']
         if len(data) < 2:
-            raise forms.ValidationError('Имя коротковато!')
+            raise ValidationError('Имя коротковато!')
 
         return data
 
