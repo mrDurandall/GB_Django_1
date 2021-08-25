@@ -53,3 +53,9 @@ class UserProfileForm(UserChangeForm):
         model = User
         fields = ('first_name', 'last_name', 'image', 'username', 'email')
 
+    def clean_first_name(self):
+        data = self.cleaned_data['first_name']
+        if len(data) < 2:
+            raise ValidationError('Имя коротковато!')
+
+        return data
