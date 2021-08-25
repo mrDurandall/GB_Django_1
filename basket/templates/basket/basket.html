@@ -17,7 +17,7 @@
                                 <input name="basketID" type="number" class="form-control"
                                        value="{{ basket.quantity }}" min="0">
                             </div>
-                            <div class="col-lg-4">2 390 руб.</div>
+                            <div class="col-lg-4">{{ basket.sum|floatformat:"2g" }} руб.</div>
                             <div class="col-lg-4">
                                 <a href="{% url 'basket:basket_remove' basket.id %}">
                                     <i class="fas fa-trash"></i>
@@ -31,7 +31,7 @@
             <div class="card mb-3">
                 <div class="card-footer">
                     <p class="float-left">Итого</p>
-                    <h4 class="float-right">2 390 руб.</h4>
+                    <h4 class="float-right">2390 руб.</h4>
                 </div>
             </div>
             <button type="button" class="btn btn-success btn-lg float-right">Оформить</button>
