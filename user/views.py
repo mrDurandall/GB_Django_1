@@ -1,8 +1,9 @@
 from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse
-from django.contrib import auth
+from django.contrib import auth, messages
 
-from user.forms import UserLoginForm, UserRegistrationForm
+from user.forms import UserLoginForm, UserRegistrationForm, UserProfileForm
+from basket.models import Basket
 
 
 def login(request):
@@ -31,6 +32,7 @@ def registration(request):
         form = UserRegistrationForm(data=request.POST)
         if form.is_valid():
             form.save()
+            messages.success(request, 'Вы зарегистрированы!')
             return HttpResponseRedirect(reverse('user:login'))
         else:
             print(form.errors)
@@ -38,4 +40,33 @@ def registration(request):
         form = UserRegistrationForm()
     context = {'title': 'GeekShop - регистрация', 'form': form}
     return render(request, 'user/register.html', context)
+
+
+def profile(request):
+    if request.method == 'POST':
+        form = UserProfileForm(instance=request.user, files=request.FILES, data=request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Данные изменены!')
+            return HttpResponseRedirect(reverse('user:profile'))
+    else:
+        form = UserProfileForm(instance=request.user)
+
+    baskets = Basket.objects.filter(user=request.user)
+    total_baskets_quantity = 0
+    total_baskets_price = 0
+
+    for basket in baskets:
+        total_baskets_quantity += basket.quantity
+        total_baskets_price += basket.sum()
+
+    context = {
+        'title': 'GeekShop - Профиль',
+        'form': form,
+        'baskets': baskets,
+        'total_quantity': total_baskets_quantity,
+        'total_price': total_baskets_price,
+    }
+
+    return render(request, 'user/profile.html', context)
 
