@@ -26,9 +26,17 @@ def basket_add(request, product_id):
 
 @login_required
 def basket_remove(request, id):
-    basket = Basket.objects.get(id=id)
-    basket.delete()
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    if request.is_ajax():
+        basket = Basket.objects.get(id=id)
+        basket.delete()
+        baskets = Basket.objects.filter(user=request.user)
+        context = {'baskets': baskets}
+        result = render_to_string('basket/basket.html', context)
+        return JsonResponse({'result': result})
+    else:
+        basket = Basket.objects.get(id=id)
+        basket.delete()
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 @login_required
