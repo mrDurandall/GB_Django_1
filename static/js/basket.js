@@ -23,8 +23,6 @@ window.onload = function (){
 
     $('.card').on('click', 'div[class="btn btn-outline-success"]', function () {
        var target = event.target;
-       console.log('test');
-       console.log(target.id)
 
        $.ajax({
            url: '/basket/add/' + target.id + '/',
