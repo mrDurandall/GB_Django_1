@@ -1,11 +1,14 @@
 from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse
+from django.contrib.auth.decorators import user_passes_test
 
 from admins.forms import AdminUserCreationFrom, AdminUserUpdateForm, AdminCategoryCreate
 from user.models import User
 from products.models import ProductCategory
 
 
+# Главная админки
+@user_passes_test(lambda u: u.is_staff)
 def index(request):
     context = {
         'title': 'GeekShop - Админка: Главная',
@@ -13,6 +16,8 @@ def index(request):
     return render(request, 'admins/index.html', context)
 
 
+# Список пользователей
+@user_passes_test(lambda u: u.is_staff)
 def users(request):
     context = {
         'title': 'GeekShop - Админка: пользователи',
@@ -21,6 +26,8 @@ def users(request):
     return render(request, 'admins/admin-users-read.html', context)
 
 
+# Добавление пользователей
+@user_passes_test(lambda u: u.is_staff)
 def user_create(request):
     if request.method == 'POST':
         form = AdminUserCreationFrom(files=request.FILES, data=request.POST)
@@ -38,6 +45,8 @@ def user_create(request):
     return render(request, 'admins/admin-users-create.html', context)
 
 
+# Изменение пользователя
+@user_passes_test(lambda u: u.is_staff)
 def user_update(request, id):
     selected_user = User.objects.get(id=id)
     if request.method == 'POST':
@@ -57,6 +66,8 @@ def user_update(request, id):
     return render(request, 'admins/admin-users-update-delete.html', context)
 
 
+# Удаление пользователя
+@user_passes_test(lambda u: u.is_staff)
 def user_delete(request, id):
     user = User.objects.get(id=id)
     user.is_active = False
@@ -64,6 +75,8 @@ def user_delete(request, id):
     return HttpResponseRedirect(reverse('admins:users'))
 
 
+# Восстановление удаленного пользователя
+@user_passes_test(lambda u: u.is_staff)
 def user_restore(request, id):
     user = User.objects.get(id=id)
     user.is_active = True
@@ -71,6 +84,8 @@ def user_restore(request, id):
     return HttpResponseRedirect(reverse('admins:users'))
 
 
+# Отображение списка категорий
+@user_passes_test(lambda u: u.is_staff)
 def categories(request):
     context = {
         'title': 'GeekShop - Админка: категории',
@@ -79,6 +94,8 @@ def categories(request):
     return render(request, 'admins/admin-categories-read.html', context)
 
 
+# Добавление категории
+@user_passes_test(lambda u: u.is_staff)
 def category_add(request):
     if request.method == 'POST':
         form = AdminCategoryCreate(data=request.POST)
@@ -96,6 +113,8 @@ def category_add(request):
     return render(request, 'admins/admin-category-create.html', context)
 
 
+# Редактирование категории
+@user_passes_test(lambda u: u.is_staff)
 def category_edit(request, id):
     selected_category = ProductCategory.objects.get(id=id)
     if request.method == 'POST':
@@ -115,12 +134,16 @@ def category_edit(request, id):
     return render(request, 'admins/admin-category-edit.html', context)
 
 
+# Удаление категории
+@user_passes_test(lambda u: u.is_staff)
 def category_delete(request, id):
     selected_category = ProductCategory.objects.get(id=id)
     selected_category.delete()
     return HttpResponseRedirect(reverse('admins:categories'))
 
 
+# Отображение списка продуктов
+@user_passes_test(lambda u: u.is_staff)
 def products(request):
     context = {
         'title': 'GeekShop - Админка: продукты',
