@@ -1,8 +1,9 @@
 from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse
 
-from admins.forms import AdminUserCreationFrom, AdminUserUpdateForm
+from admins.forms import AdminUserCreationFrom, AdminUserUpdateForm, AdminCategoryCreate
 from user.models import User
+from products.models import ProductCategory
 
 
 def index(request):
@@ -73,8 +74,51 @@ def user_restore(request, id):
 def categories(request):
     context = {
         'title': 'GeekShop - Админка: категории',
+        'categories': ProductCategory.objects.all()
     }
     return render(request, 'admins/admin-categories-read.html', context)
+
+
+def category_add(request):
+    if request.method == 'POST':
+        form = AdminCategoryCreate(data=request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('admins:categories'))
+        else:
+            print(form.errors)
+    else:
+        form = AdminCategoryCreate()
+    context = {
+        'title': 'GeekShop - Админка: добавление категории',
+        'form': form,
+    }
+    return render(request, 'admins/admin-category-create.html', context)
+
+
+def category_edit(request, id):
+    selected_category = ProductCategory.objects.get(id=id)
+    if request.method == 'POST':
+        form = AdminCategoryCreate(instance=selected_category, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('admins:categories'))
+        else:
+            print(form.errors)
+    else:
+        form = AdminCategoryCreate(instance=selected_category, )
+    context = {
+        'title': 'GeekShop - Админка: Редактирование категории',
+        'form': form,
+        'selected_category': selected_category,
+    }
+    return render(request, 'admins/admin-category-edit.html', context)
+
+
+def category_delete(request, id):
+    selected_category = ProductCategory.objects.get(id=id)
+    selected_category.delete()
+    return HttpResponseRedirect(reverse('admins:categories'))
 
 
 def products(request):
