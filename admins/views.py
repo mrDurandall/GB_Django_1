@@ -2,9 +2,12 @@ from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.decorators import user_passes_test
 
-from admins.forms import AdminUserCreationFrom, AdminUserUpdateForm, AdminCategoryCreate
+from admins.forms import AdminUserCreationFrom,\
+                        AdminUserUpdateForm, \
+                        AdminCategoryCreate, \
+                        AdminProductCreateUpdate
 from user.models import User
-from products.models import ProductCategory
+from products.models import ProductCategory, Product
 
 
 # Главная админки
@@ -147,6 +150,53 @@ def category_delete(request, id):
 def products(request):
     context = {
         'title': 'GeekShop - Админка: продукты',
+        'products': Product.objects.all(),
     }
     return render(request, 'admins/admin-products-read.html', context)
 
+
+# Добавление нового продукта
+@user_passes_test(lambda u: u.is_staff)
+def product_add(request):
+    if request.method == 'POST':
+        form = AdminProductCreateUpdate(files=request.FILES, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('admins:products'))
+        else:
+            print(form.errors)
+    else:
+        form = AdminProductCreateUpdate()
+    context = {
+        'title': 'GeekShop - Админка: добавление продукта',
+        'form': form,
+    }
+    return render(request, 'admins/admin-product-create.html', context)
+
+
+# Редактирование продукта
+@user_passes_test(lambda u: u.is_staff)
+def product_edit(request, id):
+    selected_product = Product.objects.get(id=id)
+    if request.method == 'POST':
+        form = AdminProductCreateUpdate(instance=selected_product, files=request.FILES, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('admins:products'))
+        else:
+            print(form.errors)
+    else:
+        form = AdminProductCreateUpdate(instance=selected_product, )
+    context = {
+        'title': 'GeekShop - Админка: редактирование продукта',
+        'form': form,
+        'selected_product': selected_product
+    }
+    return render(request, 'admins/admin-product-edit.html', context)
+
+
+@user_passes_test(lambda u: u.is_staff)
+def product_delete(request, id):
+    selected_product = Product.objects.get(id=id)
+    selected_product.delete()
+    return HttpResponseRedirect(reverse('admins:products'))

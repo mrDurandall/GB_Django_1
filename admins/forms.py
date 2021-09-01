@@ -4,7 +4,7 @@ from django.forms import ModelForm
 from user.forms import UserRegistrationForm, UserProfileForm
 
 from user.models import User
-from products.models import ProductCategory
+from products.models import ProductCategory, Product
 
 
 class AdminUserCreationFrom(UserRegistrationForm):
@@ -21,10 +21,41 @@ class AdminUserUpdateForm(UserProfileForm):
 
 
 class AdminCategoryCreate(ModelForm):
-    name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control py-4', }), required=True)
-    description = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control py-4',}), required=False)
+    name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control py-4',
+                                                         'placeholder': 'Введите название категории',
+                                                         }), required=True)
+    description = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control py-4',
+                                                               'placeholder': 'Введите описание категории',
+                                                               }), required=False)
 
     class Meta:
         model = ProductCategory
         fields = ('name', 'description')
+
+
+class AdminProductCreateUpdate(ModelForm):
+    categories = ProductCategory.objects.all()
+    name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control py-4',
+                                                         'placeholder': 'Введите название продукта',
+                                                         }), required=True)
+    image = forms.ImageField(widget=forms.FileInput(attrs={'class': 'custom-file-input',
+                                                           'placeholder': 'Введите изображение продукта',
+                                                           }), required=False)
+    description = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control py-4',
+                                                               'placeholder': 'Введите описание продукта',
+                                                               }), required=False)
+    price = forms.DecimalField(widget=forms.TextInput(attrs={'class': 'form-control py-4',
+                                                             'placeholder': 'Введите цену продукта',
+                                                             }), required=True)
+    quantity = forms.DecimalField(widget=forms.TextInput(attrs={'class': 'form-control py-4',
+                                                                'placeholder': 'Введите количество продукта на складе',
+                                                                }), required=True)
+    category = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'form-control py-4',
+                                                                 'placeholder': 'Выберите категорию продукта',
+                                                                 }), required=True,
+                                      queryset=ProductCategory.objects.all(), )
+
+    class Meta:
+        model = Product
+        fields = ('name', 'image', 'description', 'price', 'quantity', 'category')
 
