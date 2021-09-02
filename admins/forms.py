@@ -38,8 +38,7 @@ class AdminProductCreateUpdate(ModelForm):
     name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control py-4',
                                                          'placeholder': 'Введите название продукта',
                                                          }), required=True)
-    image = forms.ImageField(widget=forms.FileInput(attrs={'class': 'custom-file-input',
-                                                           'placeholder': 'Введите изображение продукта',
+    image = forms.ImageField(widget=forms.FileInput(attrs={'class': 'form-control form-control-lg',
                                                            }), required=False)
     description = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control py-4',
                                                                'placeholder': 'Введите описание продукта',
@@ -50,7 +49,7 @@ class AdminProductCreateUpdate(ModelForm):
     quantity = forms.DecimalField(widget=forms.TextInput(attrs={'class': 'form-control py-4',
                                                                 'placeholder': 'Введите количество продукта на складе',
                                                                 }), required=True)
-    category = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'form-control py-4',
+    category = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'form-select form-control',
                                                                  'placeholder': 'Выберите категорию продукта',
                                                                  }), required=True,
                                       queryset=ProductCategory.objects.all(), )
