@@ -58,11 +58,8 @@
                         {% for product in products %}
                             <div class="col-lg-4 col-md-6 mb-4">
                                 <div class="card h-100">
-{#                                    <div class="product_card">#}
                                         <a href="#">
                                             <img class="card-img-top"
-        {#                                             Не совсем понял, как тут правильно сослаться на файл с медиа файлами.#}
-        {#                                             Такой вариант работает, но может быть есть какой-то плейсхолдер, например?#}
                                                  src="/media/{{ product.image }}"
                                                  alt="">
                                         </a>
@@ -74,10 +71,12 @@
                                             <p class="card-text">{{ product.description }}</p>
                                         </div>
                                         <div class="card-footer text-center">
-{#                                            <a href="#" id="{{ product.id }}" class="btn btn-outline-success">Отправить в корзину</a>#}
+                                            {% if product.quantity > 0 %}
                                             <div class="btn btn-outline-success" id="{{ product.id }}">Отправить в корзину</div>
+                                            {% else %}
+                                            <div class="btn btn-outline-secondary " disabled="">Нет на складе</div>
+                                            {% endif %}
                                         </div>
-{#                                    </div>#}
                                 </div>
                             </div>
                         {% endfor %}
