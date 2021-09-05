@@ -14,13 +14,14 @@
             <div class="col-lg-3">
 
                 <h1 class="my-4">GeekShop</h1>
+                {% for category in categories %}
                 <div class="list-group">
-                    {% for category in categories %}
-                        <a href="{% url 'products:category' category.id %}"
-                           class="list-group-item">{{ category.name }}</a>
-                    {% endfor %}
+                        <a href="{% url 'products:category' category.id 1 %}"
+                           class="list-group-item {% if category_id == category.id%}active{% endif %}">
+                            {{ category.name }}
+                        </a>
                 </div>
-
+                {% endfor %}
             </div>
             <!-- /.col-lg-3 -->
 
@@ -92,11 +93,19 @@
 
                         <li class="page-item {% if not products.has_previous %} disabled {% endif %}">
                             <a class="page-link"
-                               href="{% if products.has_previous %}
-                                        {% url 'products:page' products.previous_page_number %}
-                                    {% else %}
-                                        #
-                                    {% endif %}"
+                               {% if not category_id %}
+                                   href="{% if products.has_previous %}
+                                            {% url 'products:page' products.previous_page_number %}
+                                        {% else %}
+                                            #
+                                        {% endif %}"
+                               {% else %}
+                                    href="{% if products.has_previous %}
+                                            {% url 'products:category' category_id products.previous_page_number %}
+                                        {% else %}
+                                            #
+                                        {% endif %}"
+                               {% endif %}
                                tabindex="-1"
                                aria-disabled="true">
                                 Previous
@@ -107,20 +116,36 @@
 {#                        Вопрос с урока, про подсветку активной страницы решается банально через Page.number #}
 {#                        где Page - это баналбно наш products    #}
                         <li class="page-item {% if page == products.number %} active {% endif %}">
+                            {% if not category_id %}
                             <a class="page-link "
                                href="{% url 'products:page' page %}">
                                 {{ page }}
                             </a>
+                            {% else %}
+                            <a class="page-link "
+                               href="{% url 'products:category' category_id page %}">
+                                {{ page }}
+                            </a>
+                            {% endif %}
+
                         </li>
                         {% endfor %}
 
                         <li class="page-item {% if not products.has_next %} disabled {% endif %}">
                             <a class="page-link"
-                               href="{% if products.has_next %}
-                                        {% url 'products:page' products.next_page_number %}
-                                    {% else %}
-                                        #
-                                    {% endif %}"
+                               {% if not category_id %}
+                                   href="{% if products.has_next %}
+                                            {% url 'products:page' products.next_page_number %}
+                                        {% else %}
+                                            #
+                                        {% endif %}"
+                               {% else %}
+                                    href="{% if products.has_next %}
+                                            {% url 'products:category' category_id products.next_page_number %}
+                                        {% else %}
+                                            #
+                                        {% endif %}"
+                               {% endif %}
                                tabindex="-1"
                                aria-disabled="true">
                                 Next

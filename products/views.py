@@ -12,8 +12,10 @@ def index(request):
 
 
 def products(request, category_id=None, page=1):
+    context = {}
     if category_id:
         products = Product.objects.filter(category_id=category_id)
+        context.update({'category_id': category_id})
     else:
         products = Product.objects.all()
 
@@ -25,9 +27,9 @@ def products(request, category_id=None, page=1):
     except EmptyPage:
         products_paginator = paginator.page(paginator.num_pages)
     categories = ProductCategory.objects.all()
-    context = {
+    context.update({
         'products': products_paginator,
         'categories': categories,
         'title': 'GeekShop - Каталог',
-    }
+    })
     return render(request, 'products/products.html', context)
