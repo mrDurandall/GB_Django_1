@@ -275,57 +275,115 @@ class CategoryDeleteView(DeleteView):
 
 
 # Отображение списка продуктов
-@user_passes_test(lambda u: u.is_staff)
-def products(request):
-    context = {
-        'title': 'GeekShop - Админка: продукты',
-        'products': Product.objects.all(),
-    }
-    return render(request, 'admins/admin-products-read.html', context)
+# @user_passes_test(lambda u: u.is_staff)
+# def products(request):
+#     context = {
+#         'title': 'GeekShop - Админка: продукты',
+#         'products': Product.objects.all(),
+#     }
+#     return render(request, 'admins/admin-products-read.html', context)
+
+class ProductsListView(ListView):
+
+    model = Product
+    template_name = 'admins/admin-products-read.html'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(ProductsListView, self).get_context_data(**kwargs)
+        context['title'] = 'GeekShop - Админка: продукты'
+        return context
+
+    @method_decorator(user_passes_test(lambda u: u.is_staff))
+    def dispatch(self, request, *args, **kwargs):
+        return super(ProductsListView, self).dispatch(request, *args, **kwargs)
 
 
 # Добавление нового продукта
-@user_passes_test(lambda u: u.is_staff)
-def product_add(request):
-    if request.method == 'POST':
-        form = AdminProductCreateUpdate(files=request.FILES, data=request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse('admins:products'))
-        else:
-            print(form.errors)
-    else:
-        form = AdminProductCreateUpdate()
-    context = {
-        'title': 'GeekShop - Админка: добавление продукта',
-        'form': form,
-    }
-    return render(request, 'admins/admin-product-create.html', context)
+# @user_passes_test(lambda u: u.is_staff)
+# def product_add(request):
+#     if request.method == 'POST':
+#         form = AdminProductCreateUpdate(files=request.FILES, data=request.POST)
+#         if form.is_valid():
+#             form.save()
+#             return HttpResponseRedirect(reverse('admins:products'))
+#         else:
+#             print(form.errors)
+#     else:
+#         form = AdminProductCreateUpdate()
+#     context = {
+#         'title': 'GeekShop - Админка: добавление продукта',
+#         'form': form,
+#     }
+#     return render(request, 'admins/admin-product-create.html', context)
+
+
+class ProductCreateView(CreateView):
+
+    model = Product
+    template_name = 'admins/admin-product-create.html'
+    form_class = AdminProductCreateUpdate
+    success_url = reverse_lazy('admins:products')
+
+    def get_context_data(self, **kwargs):
+        context = super(ProductCreateView, self).get_context_data(**kwargs)
+        context['title'] = 'GeekShop - Админка: добавление продукта'
+        return context
+
+    @method_decorator(user_passes_test(lambda u: u.is_staff))
+    def dispatch(self, request, *args, **kwargs):
+        return super(ProductCreateView, self).dispatch(request, *args, **kwargs)
 
 
 # Редактирование продукта
-@user_passes_test(lambda u: u.is_staff)
-def product_edit(request, id):
-    selected_product = Product.objects.get(id=id)
-    if request.method == 'POST':
-        form = AdminProductCreateUpdate(instance=selected_product, files=request.FILES, data=request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse('admins:products'))
-        else:
-            print(form.errors)
-    else:
-        form = AdminProductCreateUpdate(instance=selected_product, )
-    context = {
-        'title': 'GeekShop - Админка: редактирование продукта',
-        'form': form,
-        'selected_product': selected_product
-    }
-    return render(request, 'admins/admin-product-edit.html', context)
+# @user_passes_test(lambda u: u.is_staff)
+# def product_edit(request, id):
+#     selected_product = Product.objects.get(id=id)
+#     if request.method == 'POST':
+#         form = AdminProductCreateUpdate(instance=selected_product, files=request.FILES, data=request.POST)
+#         if form.is_valid():
+#             form.save()
+#             return HttpResponseRedirect(reverse('admins:products'))
+#         else:
+#             print(form.errors)
+#     else:
+#         form = AdminProductCreateUpdate(instance=selected_product, )
+#     context = {
+#         'title': 'GeekShop - Админка: редактирование продукта',
+#         'form': form,
+#         'selected_product': selected_product
+#     }
+#     return render(request, 'admins/admin-product-edit.html', context)
 
 
-@user_passes_test(lambda u: u.is_staff)
-def product_delete(request, id):
-    selected_product = Product.objects.get(id=id)
-    selected_product.delete()
-    return HttpResponseRedirect(reverse('admins:products'))
+class ProductUpdateView(UpdateView):
+
+    model = Product
+    template_name = 'admins/admin-product-edit.html'
+    form_class = AdminProductCreateUpdate
+    success_url = reverse_lazy('admins:products')
+
+    def get_context_data(self, **kwargs):
+        context = super(ProductUpdateView, self).get_context_data(**kwargs)
+        context['title'] = 'GeekShop - Админка: редактирование продукта'
+        return context
+
+    @method_decorator(user_passes_test(lambda u: u.is_staff))
+    def dispatch(self, request, *args, **kwargs):
+        return super(ProductUpdateView, self).dispatch(request, *args, **kwargs)
+
+
+# @user_passes_test(lambda u: u.is_staff)
+# def product_delete(request, id):
+#     selected_product = Product.objects.get(id=id)
+#     selected_product.delete()
+#     return HttpResponseRedirect(reverse('admins:products'))
+
+class ProductDeleteView(DeleteView):
+
+    model = Product
+    template_name = 'admins/admin-product-edit.html'
+    success_url = reverse_lazy('admins:products')
+
+    @method_decorator(user_passes_test(lambda u:u.is_staff))
+    def dispatch(self, request, *args, **kwargs):
+        return super(ProductDeleteView, self).dispatch(request, *args, **kwargs)
