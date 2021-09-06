@@ -1,6 +1,8 @@
 from django.shortcuts import render, HttpResponseRedirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.contrib.auth.decorators import user_passes_test
+from django.utils.decorators import method_decorator
+from django.views.generic.base import TemplateView
 
 from admins.forms import AdminUserCreationFrom,\
                         AdminUserUpdateForm, \
@@ -11,12 +13,26 @@ from products.models import ProductCategory, Product
 
 
 # Главная админки
-@user_passes_test(lambda u: u.is_staff)
-def index(request):
-    context = {
-        'title': 'GeekShop - Админка: Главная',
-    }
-    return render(request, 'admins/index.html', context)
+# @user_passes_test(lambda u: u.is_staff)
+# def index(request):
+#     context = {
+#         'title': 'GeekShop - Админка: Главная',
+#     }
+#     return render(request, 'admins/index.html', context)
+
+
+class AdminIndexView(TemplateView):
+
+    template_name = 'admins/index.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(AdminIndexView, self).get_context_data(**kwargs)
+        context['title'] = 'GeekShop - Админка: Главная'
+        return context
+    
+    @method_decorator(user_passes_test(lambda u: u.is_staff))
+    def dispatch(self, request, *args, **kwargs):
+        return super(AdminIndexView, self).dispatch(request, *args, **kwargs)
 
 
 # Список пользователей

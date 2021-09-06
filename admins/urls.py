@@ -1,14 +1,14 @@
 from django.urls import path
 
-
-from admins.views import index, users, user_create, user_update, user_delete, user_restore
+from admins.views import AdminIndexView
+from admins.views import users, user_create, user_update, user_delete, user_restore
 from admins.views import categories, category_add, category_edit, category_delete
 from admins.views import products, product_add, product_edit, product_delete
 
 app_name = 'admins'
 
 urlpatterns = [
-    path('', index, name='index'),
+    path('', AdminIndexView.as_view(), name='index'),
     path('users', users, name='users'),
     path('user_create', user_create, name='user_create'),
     path('user_update/<int:id>', user_update, name='user_update'),
