@@ -2,7 +2,7 @@ from django.urls import path
 
 from admins.views import AdminIndexView
 from admins.views import UsersListView, UserCreateView, UserUpdateView, UserDeleteRestoreView
-from admins.views import categories, category_add, category_edit, category_delete
+from admins.views import CategoriesListView, CategoryCreateView, CategoryUpdateView, CategoryDeleteView
 from admins.views import products, product_add, product_edit, product_delete
 
 app_name = 'admins'
@@ -10,13 +10,13 @@ app_name = 'admins'
 urlpatterns = [
     path('', AdminIndexView.as_view(), name='index'),
     path('users', UsersListView.as_view(), name='users'),
-    path('user_create', UserCreateView.as_view(), name='user_create'),
+    path('user_create/', UserCreateView.as_view(), name='user_create'),
     path('user_update/<int:pk>/', UserUpdateView.as_view(), name='user_update'),
     path('user_delete_restore/<int:pk>/', UserDeleteRestoreView.as_view(), name='user_delete_restore'),
-    path('categories', categories, name='categories'),
-    path('category_add', category_add, name='category_add'),
-    path('category_edit/<int:id>', category_edit, name='category_edit'),
-    path('category_delete/<int:id>', category_delete, name='category_delete'),
+    path('categories', CategoriesListView.as_view(), name='categories'),
+    path('category_add/', CategoryCreateView.as_view(), name='category_add'),
+    path('category_edit/<int:pk>/', CategoryUpdateView.as_view(), name='category_edit'),
+    path('category_delete/<int:pk>/', CategoryDeleteView.as_view(), name='category_delete'),
     path('products', products, name='products'),
     path('product_add', product_add, name='product_add'),
     path('product_edit/<int:id>', product_edit, name='product_edit'),

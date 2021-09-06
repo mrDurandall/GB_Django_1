@@ -160,61 +160,118 @@ class UserDeleteRestoreView(DeleteView):
 
 
 # Отображение списка категорий
-@user_passes_test(lambda u: u.is_staff)
-def categories(request):
-    context = {
-        'title': 'GeekShop - Админка: категории',
-        'categories': ProductCategory.objects.all()
-    }
-    return render(request, 'admins/admin-categories-read.html', context)
+# @user_passes_test(lambda u: u.is_staff)
+# def categories(request):
+#     context = {
+#         'title': 'GeekShop - Админка: категории',
+#         'categories': ProductCategory.objects.all()
+#     }
+#     return render(request, 'admins/admin-categories-read.html', context)
+
+
+class CategoriesListView(ListView):
+
+    model = ProductCategory
+    template_name = 'admins/admin-categories-read.html'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(CategoriesListView, self).get_context_data(**kwargs)
+        context['title'] = 'GeekShop - Админка: категории'
+        return context
+
+    @method_decorator(user_passes_test(lambda u: u.is_staff))
+    def dispatch(self, request, *args, **kwargs):
+        return super(CategoriesListView, self).dispatch(request, *args, **kwargs)
 
 
 # Добавление категории
-@user_passes_test(lambda u: u.is_staff)
-def category_add(request):
-    if request.method == 'POST':
-        form = AdminCategoryCreate(data=request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse('admins:categories'))
-        else:
-            print(form.errors)
-    else:
-        form = AdminCategoryCreate()
-    context = {
-        'title': 'GeekShop - Админка: добавление категории',
-        'form': form,
-    }
-    return render(request, 'admins/admin-category-create.html', context)
+# @user_passes_test(lambda u: u.is_staff)
+# def category_add(request):
+#     if request.method == 'POST':
+#         form = AdminCategoryCreate(data=request.POST)
+#         if form.is_valid():
+#             form.save()
+#             return HttpResponseRedirect(reverse('admins:categories'))
+#         else:
+#             print(form.errors)
+#     else:
+#         form = AdminCategoryCreate()
+#     context = {
+#         'title': 'GeekShop - Админка: добавление категории',
+#         'form': form,
+#     }
+#     return render(request, 'admins/admin-category-create.html', context)
+
+class CategoryCreateView(CreateView):
+
+    model = ProductCategory
+    template_name = 'admins/admin-category-create.html'
+    form_class = AdminCategoryCreate
+    success_url = reverse_lazy('admins:categories')
+
+    def get_context_data(self, **kwargs):
+        context = super(CategoryCreateView, self).get_context_data(**kwargs)
+        context['title'] = 'GeekShop - Админка: добавление категории'
+        return context
+
+    @method_decorator(user_passes_test(lambda u: u.is_staff))
+    def dispatch(self, request, *args, **kwargs):
+        return super(CategoryCreateView, self).dispatch(request, *args, **kwargs)
 
 
 # Редактирование категории
-@user_passes_test(lambda u: u.is_staff)
-def category_edit(request, id):
-    selected_category = ProductCategory.objects.get(id=id)
-    if request.method == 'POST':
-        form = AdminCategoryCreate(instance=selected_category, data=request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse('admins:categories'))
-        else:
-            print(form.errors)
-    else:
-        form = AdminCategoryCreate(instance=selected_category, )
-    context = {
-        'title': 'GeekShop - Админка: Редактирование категории',
-        'form': form,
-        'selected_category': selected_category,
-    }
-    return render(request, 'admins/admin-category-edit.html', context)
+# @user_passes_test(lambda u: u.is_staff)
+# def category_edit(request, id):
+#     selected_category = ProductCategory.objects.get(id=id)
+#     if request.method == 'POST':
+#         form = AdminCategoryCreate(instance=selected_category, data=request.POST)
+#         if form.is_valid():
+#             form.save()
+#             return HttpResponseRedirect(reverse('admins:categories'))
+#         else:
+#             print(form.errors)
+#     else:
+#         form = AdminCategoryCreate(instance=selected_category, )
+#     context = {
+#         'title': 'GeekShop - Админка: Редактирование категории',
+#         'form': form,
+#         'selected_category': selected_category,
+#     }
+#     return render(request, 'admins/admin-category-edit.html', context)
+
+class CategoryUpdateView(UpdateView):
+
+    model = ProductCategory
+    template_name = 'admins/admin-category-edit.html'
+    form_class = AdminCategoryCreate
+    success_url = reverse_lazy('admins:categories')
+
+    def get_context_data(self, **kwargs):
+        context = super(CategoryUpdateView, self).get_context_data(**kwargs)
+        context['title'] = 'GeekShop - Админка: Редактирование категории'
+        return context
+
+    @method_decorator(user_passes_test(lambda u: u.is_staff))
+    def dispatch(self, request, *args, **kwargs):
+        return super(CategoryUpdateView, self).dispatch(request, *args, **kwargs)
 
 
 # Удаление категории
-@user_passes_test(lambda u: u.is_staff)
-def category_delete(request, id):
-    selected_category = ProductCategory.objects.get(id=id)
-    selected_category.delete()
-    return HttpResponseRedirect(reverse('admins:categories'))
+# @user_passes_test(lambda u: u.is_staff)
+# def category_delete(request, id):
+#     selected_category = ProductCategory.objects.get(id=id)
+#     selected_category.delete()
+#     return HttpResponseRedirect(reverse('admins:categories'))
+
+class CategoryDeleteView(DeleteView):
+
+    model = ProductCategory
+    template_name = 'admins/admin-category-edit.html'
+    success_url = reverse_lazy('admins:categories')
+
+    @method_decorator(user_passes_test(lambda u: u.is_staff))
+    def dispatch(self, request, *args, **kwargs):
+        return super(CategoryDeleteView, self).dispatch(request, *args, **kwargs)
 
 
 # Отображение списка продуктов
