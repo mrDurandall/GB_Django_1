@@ -141,7 +141,8 @@ class UserUpdateView(UpdateView):
 #     user.save()
 #     return HttpResponseRedirect(reverse('admins:users'))
 
-class UserDeleteView(DeleteView):
+# Объединим классы удаления и восстановления в общий класс, который просто меняет занчение is_active на противоположное
+class UserDeleteRestoreView(DeleteView):
 
     model = User
     template_name = 'admins/admin-users-update-delete.html'
@@ -149,32 +150,13 @@ class UserDeleteView(DeleteView):
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
-        self.object.is_active = False
+        self.object.is_active = not self.object.is_active
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())
 
     @method_decorator(user_passes_test(lambda u: u.is_staff))
     def dispatch(self, request, *args, **kwargs):
-        return super(UserDeleteView, self).dispatch(request, *args, **kwargs)
-
-
-# Восстановление удаленного пользователя
-# @user_passes_test(lambda u: u.is_staff)
-# def user_restore(request, id):
-#     user = User.objects.get(id=id)
-#     user.is_active = True
-#     user.save()
-#     return HttpResponseRedirect(reverse('admins:users'))
-
-# Этот класс наследуем от UserDeleteView просто переопределив ему
-# методе delete. Немного нелогично получилось по-моему, но работает.
-class UserRestoreView(UserDeleteView):
-
-    def delete(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        self.object.is_active = True
-        self.object.save()
-        return HttpResponseRedirect(self.get_success_url())
+        return super(UserDeleteRestoreView, self).dispatch(request, *args, **kwargs)
 
 
 # Отображение списка категорий

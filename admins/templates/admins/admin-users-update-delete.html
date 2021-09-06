@@ -49,17 +49,14 @@
             </form>
             <div class="row">
                 <div class="col-lg-12" style="margin-top: 33px;">
+                    <form action="{% url 'admins:user_delete_restore' object.id %}" method="post">
+                    {% csrf_token %}
                     {% if object.is_active %}
-                    <form action="{% url 'admins:user_delete' object.id %}" method="post">
-                    {% csrf_token %}
-                    <input class="btn btn-danger btn-block" type="submit" value="Удалить">
-                    </form>
+                        <input class="btn  btn-danger btn-block" type="submit" value="Удалить">
                     {% else %}
-                    <form action="{% url 'admins:user_restore' object.id %}" method="post">
-                    {% csrf_token %}
-                    <input class="btn btn-success btn-block" type="submit" value="Восстановить">
-                    </form>
+                        <input class="btn  btn-success btn-block" type="submit" value="Восстановить">
                     {% endif %}
+                    </form>
                 </div>
             </div>
         </div>
