@@ -3,6 +3,7 @@ from django.urls import reverse, reverse_lazy
 from django.contrib.auth.decorators import user_passes_test
 from django.utils.decorators import method_decorator
 from django.views.generic.base import TemplateView
+from django.views.generic.list import ListView
 
 from admins.forms import AdminUserCreationFrom,\
                         AdminUserUpdateForm, \
@@ -36,13 +37,28 @@ class AdminIndexView(TemplateView):
 
 
 # Список пользователей
-@user_passes_test(lambda u: u.is_staff)
-def users(request):
-    context = {
-        'title': 'GeekShop - Админка: пользователи',
-        'users': User.objects.all(),
-    }
-    return render(request, 'admins/admin-users-read.html', context)
+# @user_passes_test(lambda u: u.is_staff)
+# def users(request):
+#     context = {
+#         'title': 'GeekShop - Админка: пользователи',
+#         'users': User.objects.all(),
+#     }
+#     return render(request, 'admins/admin-users-read.html', context)
+
+
+class UsersListView(ListView):
+
+    template_name = 'admins/admin-users-read.html'
+    model = User
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(UsersListView, self).get_context_data(**kwargs)
+        context['title'] = 'GeekShop - Админка: пользователи'
+        return context
+
+    @method_decorator(user_passes_test(lambda u: u.is_staff))
+    def dispatch(self, request, *args, **kwargs):
+        return super(UsersListView, self).dispatch(request, *args, *kwargs)
 
 
 # Добавление пользователей
