@@ -1,5 +1,5 @@
-from django.shortcuts import render, HttpResponseRedirect
-from django.urls import reverse, reverse_lazy
+from django.shortcuts import HttpResponseRedirect
+from django.urls import reverse_lazy
 from django.contrib.auth.decorators import user_passes_test
 from django.utils.decorators import method_decorator
 from django.views.generic.base import TemplateView
@@ -15,14 +15,6 @@ from products.models import ProductCategory, Product
 
 
 # Главная админки
-# @user_passes_test(lambda u: u.is_staff)
-# def index(request):
-#     context = {
-#         'title': 'GeekShop - Админка: Главная',
-#     }
-#     return render(request, 'admins/index.html', context)
-
-
 class AdminIndexView(TemplateView):
 
     template_name = 'admins/index.html'
@@ -38,14 +30,6 @@ class AdminIndexView(TemplateView):
 
 
 # Список пользователей
-# @user_passes_test(lambda u: u.is_staff)
-# def users(request):
-#     context = {
-#         'title': 'GeekShop - Админка: пользователи',
-#         'users': User.objects.all(),
-#     }
-#     return render(request, 'admins/admin-users-read.html', context)
-
 class UsersListView(ListView):
 
     template_name = 'admins/admin-users-read.html'
@@ -62,23 +46,6 @@ class UsersListView(ListView):
 
 
 # Добавление пользователей
-# @user_passes_test(lambda u: u.is_staff)
-# def user_create(request):
-#     if request.method == 'POST':
-#         form = AdminUserCreationFrom(files=request.FILES, data=request.POST)
-#         if form.is_valid():
-#             form.save()
-#             return HttpResponseRedirect(reverse('admins:users'))
-#         else:
-#             print(form.errors)
-#     else:
-#         form = AdminUserCreationFrom()
-#     context = {
-#         'title': 'GeekShop - Админка: создание пользователя',
-#         'form': form,
-#     }
-#     return render(request, 'admins/admin-users-create.html', context)
-
 class UserCreateView(CreateView):
 
     model = User
@@ -97,25 +64,6 @@ class UserCreateView(CreateView):
 
 
 # Изменение пользователя
-# @user_passes_test(lambda u: u.is_staff)
-# def user_update(request, id):
-#     selected_user = User.objects.get(id=id)
-#     if request.method == 'POST':
-#         form = AdminUserUpdateForm(instance=selected_user, files=request.FILES, data=request.POST)
-#         if form.is_valid():
-#             form.save()
-#             return HttpResponseRedirect(reverse('admins:users'))
-#     else:
-#         form = AdminUserUpdateForm(instance=selected_user, )
-#
-#     context = {
-#         'title': 'GeekShop - Админка: редактирование пользователя',
-#         'form': form,
-#         'selected_user': selected_user,
-#     }
-#
-#     return render(request, 'admins/admin-users-update-delete.html', context)
-
 class UserUpdateView(UpdateView):
 
     template_name = 'admins/admin-users-update-delete.html'
@@ -134,13 +82,6 @@ class UserUpdateView(UpdateView):
 
 
 # Удаление пользователя
-# @user_passes_test(lambda u: u.is_staff)
-# def user_delete(request, id):
-#     user = User.objects.get(id=id)
-#     user.is_active = False
-#     user.save()
-#     return HttpResponseRedirect(reverse('admins:users'))
-
 # Объединим классы удаления и восстановления в общий класс, который просто меняет занчение is_active на противоположное
 class UserDeleteRestoreView(DeleteView):
 
@@ -160,15 +101,6 @@ class UserDeleteRestoreView(DeleteView):
 
 
 # Отображение списка категорий
-# @user_passes_test(lambda u: u.is_staff)
-# def categories(request):
-#     context = {
-#         'title': 'GeekShop - Админка: категории',
-#         'categories': ProductCategory.objects.all()
-#     }
-#     return render(request, 'admins/admin-categories-read.html', context)
-
-
 class CategoriesListView(ListView):
 
     model = ProductCategory
@@ -186,22 +118,6 @@ class CategoriesListView(ListView):
 
 # Добавление категории
 # @user_passes_test(lambda u: u.is_staff)
-# def category_add(request):
-#     if request.method == 'POST':
-#         form = AdminCategoryCreate(data=request.POST)
-#         if form.is_valid():
-#             form.save()
-#             return HttpResponseRedirect(reverse('admins:categories'))
-#         else:
-#             print(form.errors)
-#     else:
-#         form = AdminCategoryCreate()
-#     context = {
-#         'title': 'GeekShop - Админка: добавление категории',
-#         'form': form,
-#     }
-#     return render(request, 'admins/admin-category-create.html', context)
-
 class CategoryCreateView(CreateView):
 
     model = ProductCategory
@@ -220,25 +136,6 @@ class CategoryCreateView(CreateView):
 
 
 # Редактирование категории
-# @user_passes_test(lambda u: u.is_staff)
-# def category_edit(request, id):
-#     selected_category = ProductCategory.objects.get(id=id)
-#     if request.method == 'POST':
-#         form = AdminCategoryCreate(instance=selected_category, data=request.POST)
-#         if form.is_valid():
-#             form.save()
-#             return HttpResponseRedirect(reverse('admins:categories'))
-#         else:
-#             print(form.errors)
-#     else:
-#         form = AdminCategoryCreate(instance=selected_category, )
-#     context = {
-#         'title': 'GeekShop - Админка: Редактирование категории',
-#         'form': form,
-#         'selected_category': selected_category,
-#     }
-#     return render(request, 'admins/admin-category-edit.html', context)
-
 class CategoryUpdateView(UpdateView):
 
     model = ProductCategory
@@ -257,12 +154,6 @@ class CategoryUpdateView(UpdateView):
 
 
 # Удаление категории
-# @user_passes_test(lambda u: u.is_staff)
-# def category_delete(request, id):
-#     selected_category = ProductCategory.objects.get(id=id)
-#     selected_category.delete()
-#     return HttpResponseRedirect(reverse('admins:categories'))
-
 class CategoryDeleteView(DeleteView):
 
     model = ProductCategory
@@ -275,14 +166,6 @@ class CategoryDeleteView(DeleteView):
 
 
 # Отображение списка продуктов
-# @user_passes_test(lambda u: u.is_staff)
-# def products(request):
-#     context = {
-#         'title': 'GeekShop - Админка: продукты',
-#         'products': Product.objects.all(),
-#     }
-#     return render(request, 'admins/admin-products-read.html', context)
-
 class ProductsListView(ListView):
 
     model = Product
@@ -299,24 +182,6 @@ class ProductsListView(ListView):
 
 
 # Добавление нового продукта
-# @user_passes_test(lambda u: u.is_staff)
-# def product_add(request):
-#     if request.method == 'POST':
-#         form = AdminProductCreateUpdate(files=request.FILES, data=request.POST)
-#         if form.is_valid():
-#             form.save()
-#             return HttpResponseRedirect(reverse('admins:products'))
-#         else:
-#             print(form.errors)
-#     else:
-#         form = AdminProductCreateUpdate()
-#     context = {
-#         'title': 'GeekShop - Админка: добавление продукта',
-#         'form': form,
-#     }
-#     return render(request, 'admins/admin-product-create.html', context)
-
-
 class ProductCreateView(CreateView):
 
     model = Product
@@ -335,26 +200,6 @@ class ProductCreateView(CreateView):
 
 
 # Редактирование продукта
-# @user_passes_test(lambda u: u.is_staff)
-# def product_edit(request, id):
-#     selected_product = Product.objects.get(id=id)
-#     if request.method == 'POST':
-#         form = AdminProductCreateUpdate(instance=selected_product, files=request.FILES, data=request.POST)
-#         if form.is_valid():
-#             form.save()
-#             return HttpResponseRedirect(reverse('admins:products'))
-#         else:
-#             print(form.errors)
-#     else:
-#         form = AdminProductCreateUpdate(instance=selected_product, )
-#     context = {
-#         'title': 'GeekShop - Админка: редактирование продукта',
-#         'form': form,
-#         'selected_product': selected_product
-#     }
-#     return render(request, 'admins/admin-product-edit.html', context)
-
-
 class ProductUpdateView(UpdateView):
 
     model = Product
@@ -372,12 +217,7 @@ class ProductUpdateView(UpdateView):
         return super(ProductUpdateView, self).dispatch(request, *args, **kwargs)
 
 
-# @user_passes_test(lambda u: u.is_staff)
-# def product_delete(request, id):
-#     selected_product = Product.objects.get(id=id)
-#     selected_product.delete()
-#     return HttpResponseRedirect(reverse('admins:products'))
-
+# Удаление продукта
 class ProductDeleteView(DeleteView):
 
     model = Product
