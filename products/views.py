@@ -1,39 +1,18 @@
 from django.shortcuts import render
 
 from .models import Product, ProductCategory
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic.list import ListView
+from django.views.generic.base import TemplateView
 
 
-def index(request):
-    context = {
-        'title': 'GeekShop - Главная',
-    }
-    return render(request, 'products/index.html', context)
+class IndexTemplateView(TemplateView):
 
+    template_name = 'products/index.html'
 
-def products(request, category_id=None, page=1):
-    context = {}
-    if category_id:
-        products = Product.objects.filter(category_id=category_id)
-        context.update({'category_id': category_id})
-    else:
-        products = Product.objects.all()
-
-    paginator = Paginator(products, per_page=3)
-    try:
-        products_paginator = paginator.page(page)
-    except PageNotAnInteger:
-        products_paginator = paginator.page(1)
-    except EmptyPage:
-        products_paginator = paginator.page(paginator.num_pages)
-    categories = ProductCategory.objects.all()
-    context.update({
-        'products': products_paginator,
-        'categories': categories,
-        'title': 'GeekShop - Каталог',
-    })
-    return render(request, 'products/products.html', context)
+    def get_context_data(self, **kwargs):
+        context = super(IndexTemplateView, self).get_context_data(**kwargs)
+        context['title'] = 'GeekShop - Главная'
+        return context
 
 
 class ProductsListView(ListView):
@@ -45,6 +24,7 @@ class ProductsListView(ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(ProductsListView, self).get_context_data(**kwargs)
         context['categories'] = ProductCategory.objects.all()
+        context['title'] = 'GeekShop - Каталог'
         return context
 
 
@@ -57,5 +37,6 @@ class CategoryProductsListView(ProductsListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(CategoryProductsListView, self).get_context_data(**kwargs)
         context['category_id'] = self.category_id
+        context['title'] = f'GeekShop - Каталог :: {ProductCategory.objects.get(id=self.category_id)}'
         return context
 
