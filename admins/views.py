@@ -1,6 +1,5 @@
 from django.shortcuts import HttpResponseRedirect
 from django.urls import reverse_lazy
-from django.contrib.auth.mixins import UserPassesTestMixin
 from django.views.generic.base import TemplateView
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -11,14 +10,7 @@ from admins.forms import AdminUserCreationFrom,\
                         AdminProductCreateUpdate
 from user.models import User
 from products.models import ProductCategory, Product
-from common.views import CommonContextMixin
-
-
-class IsStaffTestMixin(UserPassesTestMixin):
-
-    def test_func(self):
-        u = self.request.user
-        return u.is_staff
+from common.views import CommonContextMixin, IsStaffTestMixin
 
 
 # Главная админки
