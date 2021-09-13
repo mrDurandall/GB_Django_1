@@ -1,18 +1,14 @@
-from django.shortcuts import render
-
 from .models import Product, ProductCategory
 from django.views.generic.list import ListView
 from django.views.generic.base import TemplateView
 
+from common.views import CommonContextMixin
 
-class IndexTemplateView(TemplateView):
+
+class IndexTemplateView(CommonContextMixin, TemplateView):
 
     template_name = 'products/index.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(IndexTemplateView, self).get_context_data(**kwargs)
-        context['title'] = 'GeekShop - Главная'
-        return context
+    title = 'GeekShop - Главная'
 
 
 class ProductsListView(ListView):
