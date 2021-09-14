@@ -11,5 +11,5 @@ class User(AbstractUser):
     activation_key_expires = models.DateTimeField(default=(now() + timedelta(hours=48)))
 
     def is_activation_key_expires(self):
-        return not now() <= self.activation_key_expires
+        return now() <= self.activation_key_expires
 
