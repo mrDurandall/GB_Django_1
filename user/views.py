@@ -78,8 +78,14 @@ def verify(request, email, activation_key):
             user.save()
             messages.success(request, f'Пользователь {user.username} успешно активирован!')
             return HttpResponseRedirect('user:login')
+        elif user.activation_key == activation_key and not user.is_activation_key_expires():
+            verify_email_again = reverse('user:another_verify', args=[user.email])
+            messages.success(request, f'срок действия ключа для активации пользователя {user.username} истек!\n'
+                                      f'<a href="{settings.DOMAIN_NAME}{verify_email_again}">Отправить ключ повторно</a>')
+            return HttpResponseRedirect('user:login')
         else:
-            messages.error(request, 'Упс! Что-то пошло не так!')
+            messages.error(request, 'Некорректный ключ активации!')
+            return HttpResponseRedirect('user:login')
     except Exception as e:
         print(f'error activation user: {e.args}')
         return HttpResponseRedirect(reverse('user:login'))
@@ -92,4 +98,15 @@ def send_verify_email(user):
               f'перейдите по ссылке: \n' \
               f'{settings.DOMAIN_NAME}{verify_link}'
     return send_mail(title, message, settings.EMAIL_HOST_USER, [user.email], fail_silently=False)
+
+
+def send_verify_email_again(request, email):
+    user = User.objects.get(email=email)
+    user.generate_activation_key()
+    user.save()
+    send_verify_email(user)
+    messages.success(request, 'Письмо повторно отправлено')
+    return HttpResponseRedirect(reverse('user:login'))
+
+
 
