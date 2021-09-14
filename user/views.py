@@ -80,8 +80,8 @@ def verify(request, email, activation_key):
             return HttpResponseRedirect('user:login')
         elif user.activation_key == activation_key and not user.is_activation_key_expires():
             verify_email_again = reverse('user:another_verify', args=[user.email])
-            messages.success(request, f'срок действия ключа для активации пользователя {user.username} истек!\n'
-                                      f'<a href="{settings.DOMAIN_NAME}{verify_email_again}">Отправить ключ повторно</a>')
+            messages.success(request, f'срок действия ключа для активации пользователя {user.username} истек!',
+                             extra_tags=f'{settings.DOMAIN_NAME}{verify_email_again}')
             return HttpResponseRedirect('user:login')
         else:
             messages.error(request, 'Некорректный ключ активации!')
