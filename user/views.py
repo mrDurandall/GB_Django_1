@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.views import LoginView, LogoutView
 from django.views.generic.edit import CreateView, UpdateView
@@ -24,33 +24,22 @@ class UserLogoutView(LogoutView):
     pass
 
 
-# class UserRegistrationView(CommonContextMixin, SuccessMessageMixin, CreateView):
-#
-#     model = User
-#     title = 'GeekShop - регистрация'
-#     template_name = 'user/register.html'
-#     form_class = UserRegistrationForm
-#     success_url = reverse_lazy('user:login')
-#     success_message = 'Вы зарегистрированы!'
+class UserRegistrationView(CommonContextMixin, CreateView):
 
+    model = User
+    title = 'GeekShop - регистрация'
+    template_name = 'user/register.html'
+    form_class = UserRegistrationForm
+    success_url = reverse_lazy('user:login')
 
-def registration(request):
-    if request.method == 'POST':
-        form = UserRegistrationForm(data=request.POST)
-        if form.is_valid():
-            user = form.save()
-            if send_verify_email(user):
-                messages.success(request, 'Для подтверждения регистрации проверьте почту')
-                return HttpResponseRedirect(reverse('user:login'))
-            else:
-                messages.error(request, 'Ошибка отправки сообщения')
-                return HttpResponseRedirect(reverse('user:login'))
+    def form_valid(self, form):
+        user = form.save()
+        if send_verify_email(user):
+            success_message = 'Для подтверждения регистрации проверьте почту'
         else:
-            print(form.errors)
-    else:
-        form = UserRegistrationForm()
-    context = {'title': 'GeekShop - регистрация', 'form': form}
-    return render(request, 'user/register.html', context)
+            success_message = 'Ошибка отправки сообщения'
+        messages.success(self.request, success_message)
+        return HttpResponseRedirect(self.success_url)
 
 
 class ProfileView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
