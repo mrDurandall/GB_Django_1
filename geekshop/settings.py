@@ -41,6 +41,13 @@ INSTALLED_APPS = [
     'user',
     'basket',
     'admins',
+
+    'social_django'
+]
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'social_core.backends.vk.VKOAuth2',
 ]
 
 MIDDLEWARE = [
@@ -67,6 +74,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'geekshop.context_processor.basket',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -135,9 +144,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'user.User'
 
-LOGIN_URL = '/user/login'
+LOGIN_URL = '/user/login/'
+LOGIN_ERROR_URL = '/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
 
 DOMAIN_NAME = 'http://localhost:8000'
 EMAIL_HOST = 'smtp.mailtrap.io'
@@ -145,3 +156,8 @@ EMAIL_HOST_USER = 'a063ed5a22979f'
 EMAIL_HOST_PASSWORD = 'cdb2073cc0c0b7'
 EMAIL_PORT = '2525'
 
+SOCIAL_AUTH_VK_OAUTH2_KEY = '7953568'
+SOCIAL_AUTH_VK_OAUTH2_SECRET = 'c8uZRunu4jZxy7FyD4pK'
+
+SOCIAL_AUTH_VK_OAUTH2_IGNORE_DEFAULT_SCOPE = True
+SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email']
