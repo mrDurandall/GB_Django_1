@@ -56,25 +56,31 @@ class UserProfileForm(UserChangeForm):
 
 class UserProfileEditForm(forms.ModelForm):
 
-    MALE = 'M'
-    FEMALE = 'W'
-
-    GENDER_CHOISES = (
-        (MALE, 'М'),
-        (FEMALE, 'Ж'),
-    )
-
-    tagline = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control py-4',
-                                                            'placeholder': 'Введите тэги'}),
-                              required=False)
-    aboutme = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control py-4',
-                                                           'placeholder': 'Сведения о себе',
-                                                           }), required=False)
-    gender = forms.ChoiceField(widget=forms.Select(attrs={'class': 'form-select form-control',
-                                                          }),
-                               required=False,
-                               choices=GENDER_CHOISES)
+    # MALE = 'M'
+    # FEMALE = 'W'
+    #
+    # GENDER_CHOISES = (
+    #     (MALE, 'М'),
+    #     (FEMALE, 'Ж'),
+    # )
+    #
+    # tagline = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control py-4',
+    #                                                         'placeholder': 'Введите тэги'}),
+    #                           required=False)
+    # aboutme = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control py-4',
+    #                                                        'placeholder': 'Сведения о себе',
+    #                                                        }), required=False)
+    # gender = forms.ChoiceField(widget=forms.Select(attrs={'class': 'form-select form-control',
+    #                                                       }),
+    #                            required=False,
+    #                            choices=GENDER_CHOISES)
 
     class Meta:
         model = UserProfile
         fields = ('gender', 'tagline', 'aboutme', )
+
+    def __init__(self, *args, **kwargs):
+        super(UserProfileEditForm, self).__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control py-4'
+
