@@ -41,6 +41,14 @@ class UserRegistrationForm(UserCreationForm):
 
         return data
 
+    def save(self):
+        user = super(UserRegistrationForm, self).save()
+
+        user.is_active = False
+        user.generate_activation_key()
+        user.save()
+        return user
+
 
 class UserProfileForm(UserChangeForm):
     first_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control py-4'}))

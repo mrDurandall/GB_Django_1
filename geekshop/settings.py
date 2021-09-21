@@ -66,6 +66,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'geekshop.context_processor.basket',
             ],
         },
     },
@@ -137,4 +138,10 @@ AUTH_USER_MODEL = 'user.User'
 LOGIN_URL = '/user/login'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
+DOMAIN_NAME = 'http://localhost:8000'
+EMAIL_HOST = 'smtp.mailtrap.io'
+EMAIL_HOST_USER = 'a063ed5a22979f'
+EMAIL_HOST_PASSWORD = 'cdb2073cc0c0b7'
+EMAIL_PORT = '2525'
 

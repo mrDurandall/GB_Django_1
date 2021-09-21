@@ -9,7 +9,10 @@
              style="margin-top: 50px;">
             {% if messages %}
                 {% for message in messages %}
-                    {{ message }}
+                    {{ message }} <br>
+                    {% if message.extra_tags %}
+                        <u><a href="{{ message.extra_tags }}">Отправить повторно</a></u>
+                    {% endif %}
                 {% endfor %}
             {% else %}
                 {{ form.non_field_errors }}
