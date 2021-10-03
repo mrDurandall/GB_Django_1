@@ -1,8 +1,7 @@
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm
 from django import forms
-from django.core.exceptions import ValidationError
 
-from user.models import User
+from user.models import User, UserProfile
 
 
 class UserLoginForm(AuthenticationForm):
@@ -34,13 +33,6 @@ class UserRegistrationForm(UserCreationForm):
         model = User
         fields = ('username', 'email', 'first_name', 'last_name', 'password1', 'password2')
 
-    def clean_first_name(self):
-        data = self.cleaned_data['first_name']
-        if len(data) < 2:
-            raise ValidationError('Имя коротковато!')
-
-        return data
-
     def save(self):
         user = super(UserRegistrationForm, self).save()
 
@@ -61,9 +53,34 @@ class UserProfileForm(UserChangeForm):
         model = User
         fields = ('first_name', 'last_name', 'image', 'username', 'email')
 
-    def clean_first_name(self):
-        data = self.cleaned_data['first_name']
-        if len(data) < 2:
-            raise ValidationError('Имя коротковато!')
 
-        return data
+class UserProfileEditForm(forms.ModelForm):
+
+    # MALE = 'M'
+    # FEMALE = 'W'
+    #
+    # GENDER_CHOISES = (
+    #     (MALE, 'М'),
+    #     (FEMALE, 'Ж'),
+    # )
+    #
+    # tagline = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control py-4',
+    #                                                         'placeholder': 'Введите тэги'}),
+    #                           required=False)
+    # aboutme = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control py-4',
+    #                                                        'placeholder': 'Сведения о себе',
+    #                                                        }), required=False)
+    # gender = forms.ChoiceField(widget=forms.Select(attrs={'class': 'form-select form-control',
+    #                                                       }),
+    #                            required=False,
+    #                            choices=GENDER_CHOISES)
+
+    class Meta:
+        model = UserProfile
+        fields = ('gender', 'tagline', 'aboutme', )
+
+    def __init__(self, *args, **kwargs):
+        super(UserProfileEditForm, self).__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control py-4'
+

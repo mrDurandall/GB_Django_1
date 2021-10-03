@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib import messages
 from django.core.mail import send_mail
+from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
@@ -9,7 +10,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 
-from user.forms import UserLoginForm, UserRegistrationForm, UserProfileForm
+from user.forms import UserLoginForm, UserRegistrationForm, UserProfileForm, UserProfileEditForm
 from basket.models import Basket, User
 from common.views import CommonContextMixin
 
@@ -42,21 +43,43 @@ class UserRegistrationView(CommonContextMixin, CreateView):
         return HttpResponseRedirect(self.success_url)
 
 
-class ProfileView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+# class ProfileView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+#
+#     model = User
+#     template_name = 'user/profile.html'
+#     form_class = UserProfileForm
+#     success_message = 'Данные изменены!'
+#
+#     def get_success_url(self):
+#         return reverse_lazy('user:profile', args=(self.object.id,))
+#
+#     def get_context_data(self, **kwargs):
+#         context = super(ProfileView, self).get_context_data(**kwargs)
+#         context['baskets'] = Basket.objects.filter(user=self.object)
+#         context['title'] = 'GeekShop - Профиль'
+#         return context
 
-    model = User
-    template_name = 'user/profile.html'
-    form_class = UserProfileForm
-    success_message = 'Данные изменены!'
 
-    def get_success_url(self):
-        return reverse_lazy('user:profile', args=(self.object.id,))
+@transaction.atomic
+def profile(request):
+    if request.method == 'POST':
+        form = UserProfileForm(data=request.POST, files=request.FILES, instance=request.user)
+        profile_form = UserProfileEditForm(data=request.POST, instance=request.user.userprofile)
+        if form.is_valid() and profile_form.is_valid():
+            form.save()
+            messages.success(request, 'Данные успешно изменены!')
+            return HttpResponseRedirect(reverse('user:profile'))
+    else:
+        form = UserProfileForm(instance=request.user)
+        profile_form = UserProfileEditForm(instance=request.user.userprofile)
 
-    def get_context_data(self, **kwargs):
-        context = super(ProfileView, self).get_context_data(**kwargs)
-        context['baskets'] = Basket.objects.filter(user=self.object)
-        context['title'] = 'GeekShop - Профиль'
-        return context
+    context = {
+        'form': form,
+        'profile_form': profile_form,
+        'title': 'GeekShop - Профиль',
+        'baskets': Basket.objects.filter(user=request.user), }
+
+    return render(request, 'user/profile.html', context)
 
 
 def verify(request, email, activation_key):
