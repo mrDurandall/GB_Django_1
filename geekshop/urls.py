@@ -17,13 +17,14 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.decorators.cache import cache_page
 
 
 from products.views import IndexTemplateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', IndexTemplateView.as_view(), name='index'),
+    path('', cache_page(30)(IndexTemplateView.as_view()), name='index'),
     path('products/', include('products.urls', namespace='products')),
     path('user/', include('user.urls', namespace='user')),
     path('basket/', include('basket.urls', namespace='basket')),
@@ -35,3 +36,7 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+    import debug_toolbar
+
+    urlpatterns += [path('__debug__/', include(debug_toolbar.urls))]
