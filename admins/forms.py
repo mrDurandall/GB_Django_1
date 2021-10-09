@@ -28,9 +28,11 @@ class AdminCategoryCreate(ModelForm):
                                                                'placeholder': 'Введите описание категории',
                                                                }), required=False)
 
+    discount = forms.IntegerField(label='скидка', required=False, min_value=0, max_value=90, initial=0)
+
     class Meta:
         model = ProductCategory
-        fields = ('name', 'description', 'is_active')
+        fields = ('name', 'description', 'is_active', 'discount')
 
 
 class AdminProductCreateUpdate(ModelForm):
