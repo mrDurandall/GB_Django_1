@@ -1,13 +1,15 @@
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 from django.shortcuts import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic.base import TemplateView
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
-from admins.forms import AdminUserCreationFrom,\
-                        AdminUserUpdateForm, \
-                        AdminCategoryCreate, \
-                        AdminProductCreateUpdate
+from admins.forms import AdminUserCreationFrom, \
+    AdminUserUpdateForm, \
+    AdminCategoryCreate, \
+    AdminProductCreateUpdate
 from user.models import User
 from products.models import ProductCategory, Product
 from common.views import CommonContextMixin, IsStaffTestMixin
@@ -15,14 +17,12 @@ from common.views import CommonContextMixin, IsStaffTestMixin
 
 # Главная админки
 class AdminIndexView(IsStaffTestMixin, CommonContextMixin, TemplateView):
-
     template_name = 'admins/index.html'
     title = 'GeekShop - Админка: Главная'
 
 
 # Список пользователей
 class UsersListView(IsStaffTestMixin, CommonContextMixin, ListView):
-
     template_name = 'admins/admin-users-read.html'
     model = User
     title = 'GeekShop - Админка: пользователи'
@@ -30,7 +30,6 @@ class UsersListView(IsStaffTestMixin, CommonContextMixin, ListView):
 
 # Добавление пользователей
 class UserCreateView(IsStaffTestMixin, CommonContextMixin, CreateView):
-
     model = User
     template_name = 'admins/admin-users-create.html'
     form_class = AdminUserCreationFrom
@@ -40,7 +39,6 @@ class UserCreateView(IsStaffTestMixin, CommonContextMixin, CreateView):
 
 # Изменение пользователя
 class UserUpdateView(IsStaffTestMixin, CommonContextMixin, UpdateView):
-
     template_name = 'admins/admin-users-update-delete.html'
     model = User
     form_class = AdminUserUpdateForm
@@ -51,7 +49,6 @@ class UserUpdateView(IsStaffTestMixin, CommonContextMixin, UpdateView):
 # Удаление пользователя
 # Объединим классы удаления и восстановления в общий класс, который просто меняет занчение is_active на противоположное
 class UserDeleteRestoreView(IsStaffTestMixin, DeleteView):
-
     model = User
     template_name = 'admins/admin-users-update-delete.html'
     success_url = reverse_lazy('admins:users')
@@ -65,7 +62,6 @@ class UserDeleteRestoreView(IsStaffTestMixin, DeleteView):
 
 # Отображение списка категорий
 class CategoriesListView(IsStaffTestMixin, CommonContextMixin, ListView):
-
     model = ProductCategory
     template_name = 'admins/admin-categories-read.html'
     title = 'GeekShop - Админка: категории'
@@ -74,7 +70,6 @@ class CategoriesListView(IsStaffTestMixin, CommonContextMixin, ListView):
 # Добавление категории
 # @user_passes_test(lambda u: u.is_staff)
 class CategoryCreateView(IsStaffTestMixin, CommonContextMixin, CreateView):
-
     model = ProductCategory
     template_name = 'admins/admin-category-create.html'
     form_class = AdminCategoryCreate
@@ -84,7 +79,6 @@ class CategoryCreateView(IsStaffTestMixin, CommonContextMixin, CreateView):
 
 # Редактирование категории
 class CategoryUpdateView(IsStaffTestMixin, CommonContextMixin, UpdateView):
-
     model = ProductCategory
     template_name = 'admins/admin-category-edit.html'
     form_class = AdminCategoryCreate
@@ -94,7 +88,6 @@ class CategoryUpdateView(IsStaffTestMixin, CommonContextMixin, UpdateView):
 
 # Удаление категории
 class CategoryDeleteView(IsStaffTestMixin, DeleteView):
-
     model = ProductCategory
     template_name = 'admins/admin-category-edit.html'
     success_url = reverse_lazy('admins:categories')
@@ -108,7 +101,6 @@ class CategoryDeleteView(IsStaffTestMixin, DeleteView):
 
 # Отображение списка продуктов
 class ProductsListView(IsStaffTestMixin, CommonContextMixin, ListView):
-
     model = Product
     template_name = 'admins/admin-products-read.html'
     title = 'GeekShop - Админка: продукты'
@@ -116,7 +108,6 @@ class ProductsListView(IsStaffTestMixin, CommonContextMixin, ListView):
 
 # Добавление нового продукта
 class ProductCreateView(IsStaffTestMixin, CommonContextMixin, CreateView):
-
     model = Product
     template_name = 'admins/admin-product-create.html'
     form_class = AdminProductCreateUpdate
@@ -126,7 +117,6 @@ class ProductCreateView(IsStaffTestMixin, CommonContextMixin, CreateView):
 
 # Редактирование продукта
 class ProductUpdateView(IsStaffTestMixin, CommonContextMixin, UpdateView):
-
     model = Product
     template_name = 'admins/admin-product-edit.html'
     form_class = AdminProductCreateUpdate
@@ -136,7 +126,6 @@ class ProductUpdateView(IsStaffTestMixin, CommonContextMixin, UpdateView):
 
 # Удаление продукта
 class ProductDeleteView(IsStaffTestMixin, DeleteView):
-
     model = Product
     template_name = 'admins/admin-product-edit.html'
     success_url = reverse_lazy('admins:products')
@@ -146,3 +135,12 @@ class ProductDeleteView(IsStaffTestMixin, DeleteView):
         self.object.is_active = not self.object.is_active
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())
+
+
+@receiver(pre_save, sender=ProductCategory)
+def product_is_active_update_productcategory_save(sender, instance, **kwargs):
+    if instance.pk:
+        if instance.is_active:
+            instance.product_set.update(is_active=True)
+        else:
+            instance.product_set.update(is_active=False)
