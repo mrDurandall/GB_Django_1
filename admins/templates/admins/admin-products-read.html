@@ -19,6 +19,7 @@
                                     <th>Цена</th>
                                     <th>количество на складе</th>
                                     <th>Категория</th>
+                                    <th>Активен</th>
                                 </tr>
                                 </thead>
                                 <tfoot>
@@ -28,6 +29,7 @@
                                     <th>Цена</th>
                                     <th>количество на складе</th>
                                     <th>Категория</th>
+                                    <th>Активен</th>
                                 </tr>
                                 </tfoot>
                                 <tbody>
@@ -40,6 +42,7 @@
                                     <td>{{ product.price }}</td>
                                     <td>{{ product.quantity }}</td>
                                     <td>{{ product.category.name }}</td>
+                                    <td>{{ product.is_active }}</td>
                                 </tr>
                                 {% endfor %}
                                 </tbody>

@@ -99,6 +99,12 @@ class CategoryDeleteView(IsStaffTestMixin, DeleteView):
     template_name = 'admins/admin-category-edit.html'
     success_url = reverse_lazy('admins:categories')
 
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.is_active = not self.object.is_active
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
+
 
 # Отображение списка продуктов
 class ProductsListView(IsStaffTestMixin, CommonContextMixin, ListView):
@@ -134,3 +140,9 @@ class ProductDeleteView(IsStaffTestMixin, DeleteView):
     model = Product
     template_name = 'admins/admin-product-edit.html'
     success_url = reverse_lazy('admins:products')
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.is_active = not self.object.is_active
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())

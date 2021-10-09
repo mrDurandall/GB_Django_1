@@ -30,7 +30,7 @@ class AdminCategoryCreate(ModelForm):
 
     class Meta:
         model = ProductCategory
-        fields = ('name', 'description')
+        fields = ('name', 'description', 'is_active')
 
 
 class AdminProductCreateUpdate(ModelForm):
@@ -56,5 +56,5 @@ class AdminProductCreateUpdate(ModelForm):
 
     class Meta:
         model = Product
-        fields = ('name', 'image', 'description', 'price', 'quantity', 'category')
+        fields = ('name', 'image', 'description', 'price', 'quantity', 'category', 'is_active')
 
