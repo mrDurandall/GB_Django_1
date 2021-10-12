@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.functional import cached_property
 
 # Create your models here.
 from user.models import User
@@ -15,7 +16,7 @@ class BasketQuerySet(models.QuerySet):
 
 
 class Basket(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='basket')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=0)
     created_timestamp = models.DateTimeField(auto_now_add=True)
@@ -27,13 +28,22 @@ class Basket(models.Model):
     def sum(self):
         return self.product.price * self.quantity
 
+    @cached_property
+    def get_items_cached (self):
+        return self.user.basket.select_related()
+
     def total_quantity(self):
-        baskets = Basket.objects.filter(user=self.user)
-        return sum(basket.quantity for basket in baskets)
+
+        _items = self.get_items_cached
+        return sum(list(map(lambda i: i.quantity, _items)))
+        # baskets = Basket.objects.filter(user=self.user)
+        # return sum(basket.quantity for basket in baskets)
 
     def total_price(self):
-        baskets = Basket.objects.filter(user=self.user)
-        return sum(basket.sum() for basket in baskets)
+        # baskets = Basket.objects.filter(user=self.user)
+        # return sum(basket.sum() for basket in baskets)
+        _items = self.get_items_cached
+        return sum(list(map(lambda i: i.quantity * i.product.price, _items)))
 
     @staticmethod
     def get_item(pk):
